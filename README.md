@@ -26,3 +26,20 @@ XXX not this, no other data: Vertical line at the start of the UA invasion
 Third notebook:
 Implement a Europe-wide stats, use percentage_of_negative instead of averaging.
 Add a filter for char_length >= 100
+
+
+# 2024-06-27T08:09:21
+
+Hi Peter, just checking the graphs, they look fine but I agree 3 months is maybe a too wide time span for a parliamentary life cycle. I've had good results with datemonths in the past (Jan, Feb, March ...) but it might make sense to try also dateweek. I am curious what will come out of it. It is really funny to see how little positive sentiment occurs in the national parliaments.
+
+Minor comments:
+- For y-axis, spell out full percentage (0%, 25%, 75%, 100%) and maybe make it a bit higher. The graphs look a bit squished. ✓
+- For x-axis reduce the number of ticks, to make it more readable, or fully rotate the years. ✓
+- When you do the averages, can you also calculate confidence intervals and plot them as a ribbon with the trend line? It would be good to see how spread our data are. ✓
+- I would prefer a slightly fancier colors for sentiment -  here is a color pallet I usually work with in R. My favorite crayons :D https://kbroman.wordpress.com/wp-content/uploads/2014/05/crayons.png. Anyway, maybe something like "maroon" for positive sentiment, "cornflower" for negative sentiment, and "manatee" for neutral. ✓
+- The covid period is not very visible. What about combination of line thickness and alpha? ✓
+For the last point I meant something like this. I made it in R using ggplot2.
+For the second notebook, maybe Netherlands is not the best example then. The Dutch parliament was paralyzed by long government formations in the recent years. That might explain why we have so few speeches there. Still, it is a problem as this is not something normal. Can we try France? It does not really matter to me as I am not an expert on either one of them. -> FR seems very well populated
+Skimming through the most negative/positive MPs, it is clear we need to filter out the outliers (very few speeches) from the overview. Rather than normalizing what we have there and explaining what we did and how, let's simply focus on "average" MPs. For MPs, let's focus on individuals with "count" within one or two standard deviation from the mean.
+I would do the same thing for the European level political parties (1 or 2 SD). For national parties (like the table for the Dutch parliament), I would keep everything as it is.
+Overall, this is a very good start 👏
