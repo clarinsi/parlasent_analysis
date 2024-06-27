@@ -43,3 +43,13 @@ For the second notebook, maybe Netherlands is not the best example then. The Dut
 Skimming through the most negative/positive MPs, it is clear we need to filter out the outliers (very few speeches) from the overview. Rather than normalizing what we have there and explaining what we did and how, let's simply focus on "average" MPs. For MPs, let's focus on individuals with "count" within one or two standard deviation from the mean.
 I would do the same thing for the European level political parties (1 or 2 SD). For national parties (like the table for the Dutch parliament), I would keep everything as it is.
 Overall, this is a very good start 👏
+
+Reply:
+Minor comments have been implemented in the latest commit. The colors were scraped from the png you provided, and I think they might be too pastel for this use case (esp. with the confidence interval behind the lines and changing opacity, sometimes I felt like my eyes went bad :D).
+
+For the confidence interval I now plot plus/minus one standard deviation. Some words have to be said about what precisely I'm plotting: I first calculate 1-day percentage_of_negative, percentage_of_positive, and percentage_of_neutral. I linearly interpolate the days where we have no data, and then calculate a rolling mean and standard deviations over 30 days for smoothing. Standard deviation is then used for confidence interval. This works nicely, but obviously gives no idea about the missing data periods we might have. Happy to hear your thoughts on this on this. Also, have you envisioned a better confidence interval estimator than +/- one sigma?
+
+Regarding the third notebook: I now compare France and Croatia; it's much better populated. The filtration by one or two standard deviations is implemented, but I noticed that due to the long tail of the distribution, even one standard deviation is too big and the infrequent speakers still pop in. I implemented interquartile filtering, so that only Q2 and Q3 speakers make it in the final output. Now I think this should be changed to only limiting the infrequent speakers/parties, what do you think?
+
+As proposed, the per-country stats are left unfiltered.
+
