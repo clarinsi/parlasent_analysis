@@ -53,3 +53,12 @@ Regarding the third notebook: I now compare France and Croatia; it's much better
 
 As proposed, the per-country stats are left unfiltered.
 
+# 2024-06-28T07:28:46
+
+ok, new suggestion, let's eliminate speakers in q1 -  those infrequent/irrelevant
+and you can limit the printout to 50 most prominent actors
+applies to both parties and MPs
+Maybe try smoothing the trend line even more for less structure in the data (my "EKG" picture  was not a good example in that sense )
+
+3rd notebook: The q1 filtering is now used for the corpus-wide stats.
+1st notebook: Smoothing was now extended to a year. I used https://medialab.github.io/iwanthue/ for the colors. I was toying with still including the standard deviation, but it's hard to see anything in the non-covid area. How about twin vertical bars, especially since the UA invasion pretty much matches what we decided would be the end of the COVID perios?
