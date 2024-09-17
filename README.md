@@ -62,3 +62,12 @@ Maybe try smoothing the trend line even more for less structure in the data (my 
 
 3rd notebook: The q1 filtering is now used for the corpus-wide stats.
 1st notebook: Smoothing was now extended to a year. I used https://medialab.github.io/iwanthue/ for the colors. I was toying with still including the standard deviation, but it's hard to see anything in the non-covid area. How about twin vertical bars, especially since the UA invasion pretty much matches what we decided would be the end of the COVID perios?
+
+
+# Whence the discrepancy between Nikola's speadsheet and my results?
+
+* Summarisation is already too late, our data differs before, already on speaker level.
+
+* Nikola deals with raw texts, and here we deal Nikola's aggregate numbers (speeches.csv.zip, this already has logits pondered and logits averaged, but does not propagate number of sentences or distributions of their lenghts). This alone could be the cause for the difference, given that we're doing person averages based on per-speech averages, while Nikola can access the entries directly.
+
+* Nikola seems to use filtering on sentence level, in line 47 of sentiment_per_speaker.py and take speakers that have >= 100 sentences regardless of Coalition/Opposition status, while here we cannot do that as we don't have the sentences.
