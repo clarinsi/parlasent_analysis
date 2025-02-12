@@ -1,0 +1,30 @@
+from pathlib import Path
+
+
+lexicoder_path = Path("lexicoder_dict", "lexicoder_dict_en.jsonl")
+lexicoder_preprocessor_path = Path("lexicoder_dict", "LSDpreprocess2015.txt")
+rule lsd:
+    input: "data/input/{file}.csv"
+    output: "data/lsd/{file}.jsonl"
+    conda: "parlasent.yml"
+    params:
+        lexicoder = lexicoder_path,
+        preprocessor=lexicoder_preprocessor_path,
+    script: "scripts/lexicoder.py"
+rule parlasent:
+    input: "data/input/{file}.csv"
+    output: "data/parlasent/{file}.jsonl"
+    conda: "parlasentransformers.yml"
+    script: "scripts/parlasent.py"
+
+rule gather:
+    default_target: True
+    input:
+        lsd = expand(rules.lsd.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
+        parlasent = expand(rules.parlasent.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
+
+    output:
+        png = "pairplot.png",
+        json = "1_coding_2010.json"
+    conda: "parlasentransformers.yml"
+    script: "scripts/analyze.py"
