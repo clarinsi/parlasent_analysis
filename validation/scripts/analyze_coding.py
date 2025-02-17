@@ -1,11 +1,11 @@
 from pathlib import Path
 
 try:
-    input_lsd = snakemake.input.lsd
-    input_parlasent = snakemake.input.parlasent
+    input_lsd = snakemake.input.lsd_coding
+    input_parlasent = snakemake.input.parlasent_coding
     outpng = snakemake.output.png
     outjson = snakemake.output.json
-except:
+except NameError as e:
     input_lsd = list(Path("data/lsd/").glob("*.jsonl"))
     input_parlasent = list(Path("data/parlasent/").glob("*.jsonl"))
     outpng = "brisi.png"
@@ -30,8 +30,9 @@ parlasent = pl.concat(
             pl.lit(Path(i).with_suffix("").name).alias("File")
         )
         for i in input_parlasent
+        if "coding" in str(i)
     ],
-    how="vertical",
+    how="vertical_relaxed",
 )
 
 df = (
@@ -58,6 +59,7 @@ df = (
 )
 print(df)
 df.write_ndjson(outjson)
+print("wrote", outjson)
 2 + 2
 import seaborn as sns
 import numpy as np
@@ -97,4 +99,5 @@ g.map_diag(
 )
 plt.tight_layout()
 plt.savefig(outpng)
+print("wrote", outpng)
 2 + 2

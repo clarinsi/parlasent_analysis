@@ -17,14 +17,33 @@ rule parlasent:
     conda: "parlasentransformers.yml"
     script: "scripts/parlasent.py"
 
-rule gather:
-    default_target: True
+rule parlasent_de:
+    input: "de_dict/DE_bundestag/{file}.csv"
+    output: "data/parlasent/{file}.jsonl"
+    conda: "parlasentransformers.yml"
+    script: "scripts/parlasent.py"
+rule gather_coding:
     input:
-        lsd = expand(rules.lsd.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
-        parlasent = expand(rules.parlasent.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
-
+        lsd_coding = expand(rules.lsd.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
+        parlasent_coding = expand(rules.parlasent.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
     output:
-        png = "pairplot.png",
+        png = "pairplot_coding.png",
         json = "1_coding_2010.json"
     conda: "parlasentransformers.yml"
-    script: "scripts/analyze.py"
+    script: "scripts/analyze_coding.py"
+
+
+rule gather_de:
+    input:
+        parlasent_de = "data/parlasent/bundestag_raw_and_counts_DE.jsonl"
+    output:
+        png = "pairplot_de.png",
+        json = "de.json"
+    conda: "parlasentransformers.yml"
+    script: "scripts/analyze_de.py"
+
+
+
+rule gather:
+    default_target: True
+    input: [rules.gather_coding.output.png, rules.gather_de.output.png, ]

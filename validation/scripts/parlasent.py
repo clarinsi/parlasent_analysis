@@ -25,7 +25,10 @@ model = ClassificationModel(
     num_labels=1,
     args=model_args,
 )
-predictions, logits = model.predict(df["Text"].to_list())
+try:
+    predictions, logits = model.predict(df["Text"].to_list())
+except:
+    predictions, logits = model.predict(df["sentence"].to_list())
 
 df = df.with_columns(ParlaSent=predictions)
 
