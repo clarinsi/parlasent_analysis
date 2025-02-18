@@ -3,13 +3,17 @@ from pathlib import Path
 try:
     input_lsd = snakemake.input.lsd_coding
     input_parlasent = snakemake.input.parlasent_coding
+    input_gpt = snakemake.input.gpt
     outpng = snakemake.output.png
     outjson = snakemake.output.json
+    dataset = snakemake.params.name
 except NameError as e:
     input_lsd = list(Path("data/lsd/").glob("*coding*.jsonl"))
     input_parlasent = list(Path("data/parlasent/").glob("*coding*.jsonl"))
+    input_gpt = "data/english_with_GPT_preds.jsonl"
     outpng = "brisi.png"
     outjson = "brisi.json"
+    dataset = "English validation dataset"
 
 import polars as pl
 import numpy as np
@@ -34,7 +38,7 @@ parlasent = pl.concat(
     ],
     how="vertical_relaxed",
 )
-
+gpt = pl.read_ndjson(input_gpt)
 df = (
     lsd.select(["Number", "Text", "File", "Coding", "LSD"])
     .join(
@@ -57,7 +61,18 @@ df = (
     )
     .filter(pl.col("Coding") != 99)
 )
+df = df.join(
+    gpt.select(["text", "GPT_pred"]).unique().rename({"text": "Text"}),
+    on="Text",
+)
 print(df)
+df = df.rename(
+    {
+        "Coding": "gold",
+        "GPT_pred": "GPT",
+        "NetTone": "dictionary score",
+    }
+)
 df.write_ndjson(outjson)
 print("wrote", outjson)
 2 + 2
@@ -75,18 +90,10 @@ def corrfunc(x, y, hue=None, ax=None, **kws):
     ax.annotate(rf"$\rho$ = {r:.3f}, {p=:.1e}", xy=(0.1, 0.05), xycoords=ax.transAxes)
 
 
-df = df.with_columns(pl.col("Text").str.len_chars().alias("Char Length"))
-df_pandas = df.select(
-    [
-        "Coding",
-        "Char Length",
-        "ParlaSent",
-        "NetTone",
-        "ExpressedSentiment",
-    ]
-).to_pandas()
+df_pandas = df.select(["gold", "dictionary score", "ParlaSent", "GPT"]).to_pandas()
 g = sns.PairGrid(
     df_pandas,
+    corner=True,
 )
 g.map_lower(
     sns.scatterplot,
@@ -94,14 +101,14 @@ g.map_lower(
     alpha=0.1,
     color="k",
 )
-g.map_lower(corrfunc)
-g.map_upper(sns.kdeplot, color="k", levels=5)
-g.map_upper(corrfunc)
+# g.map_lower(corrfunc)
+# g.map_upper(sns.kdeplot, color="k", levels=5)
+# g.map_upper(corrfunc)
 g.map_diag(
     sns.histplot,
     color="k",
 )
+plt.gcf().suptitle(dataset)
 plt.tight_layout()
 plt.savefig(outpng)
-print("wrote", outpng)
 2 + 2

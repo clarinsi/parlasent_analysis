@@ -18,27 +18,43 @@ rule parlasent:
     script: "scripts/parlasent.py"
 
 rule parlasent_de:
-    input: "de_dict/DE_bundestag/{file}.csv"
+    input: "data/de_dict/DE_bundestag/{file}.csv"
     output: "data/parlasent/{file}.jsonl"
     conda: "parlasentransformers.yml"
     script: "scripts/parlasent.py"
+
+rule download_tajas_data:
+    output:
+        english = "data/english_with_GPT_preds.jsonl",
+        german = "data/german_with_GPT_preds.jsonl",
+    shell:
+        """git clone https://github.com/TajaKuzman/LLMs-on-ParlaSent
+        cp LLMs-on-ParlaSent/datasets/*_with_GPT_preds.jsonl data/
+        rm -rf LLMs-on-ParlaSent
+        """
 rule gather_coding:
     input:
         lsd_coding = expand(rules.lsd.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
         parlasent_coding = expand(rules.parlasent.output[0], file=expand("1_coding_{letter}_2010", letter=["a","b","c"])),
+        gpt = rules.download_tajas_data.output.english,
+    params:
+        name = "English validation dataset"
     output:
-        png = "pairplot_coding.png",
-        json = "1_coding_2010.json"
+        png = "pairplot_english.png",
+        json = "english.jsonl"
     conda: "parlasentransformers.yml"
     script: "scripts/analyze_coding.py"
 
 
 rule gather_de:
     input:
-        parlasent_de = "data/parlasent/bundestag_raw_and_counts_DE.jsonl"
+        parlasent_de = "data/parlasent/bundestag_raw_and_counts_DE.jsonl",
+        gpt = rules.download_tajas_data.output.german,
+    params:
+        name = "German validation dataset"
     output:
-        png = "pairplot_de.png",
-        json = "de.json"
+        png = "pairplot_german.png",
+        json = "german.jsonl"
     conda: "parlasentransformers.yml"
     script: "scripts/analyze_de.py"
 

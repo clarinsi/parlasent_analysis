@@ -25,11 +25,15 @@ model = ClassificationModel(
     num_labels=1,
     args=model_args,
 )
+from datetime import datetime
+
+start = datetime.now()
 try:
     predictions, logits = model.predict(df["Text"].to_list())
 except:
     predictions, logits = model.predict(df["sentence"].to_list())
 
+print(f"Inference on {df.shape[0]} took {datetime.now() - start} seconds")
 df = df.with_columns(ParlaSent=predictions)
 
 2 + 2
