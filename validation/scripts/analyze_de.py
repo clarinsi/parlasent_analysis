@@ -38,12 +38,16 @@ df = df.with_columns(
 
 def corrfunc(x, y, hue=None, ax=None, **kws):
     """Plot the correlation coefficient in the top left hand corner of a plot."""
-    r, _ = spearmanr(x, y)
+    r, p = spearmanr(x, y)
+
     ax = ax or plt.gca()
-    ax.annotate(rf"$\rho$ = {r:.2f}", xy=(0.7, 0.1), xycoords=ax.transAxes)
+    ax.annotate(rf"$\rho$ = {r:.3f}, {p=:.1e}", xy=(0.1, 0.05), xycoords=ax.transAxes)
 
 
-df_pandas = df.select(["vote", "ParlaSent", "sentiment.norm"]).to_pandas()
+df = df.with_columns(pl.col("sentence").str.len_chars().alias("Char Length"))
+df_pandas = df.select(
+    ["vote", "Char Length", "ParlaSent", "sentiment.norm"]
+).to_pandas()
 g = sns.PairGrid(
     df_pandas,
 )

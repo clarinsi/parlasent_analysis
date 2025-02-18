@@ -56,7 +56,7 @@ def lsd(text: str) -> dict[str, int]:
         for seed in seeds:
             pattern = seed.replace("**", "*")
             pattern = pattern.replace("*", r"[^\s]*")
-            hits = re.findall(pattern=pattern, string=text)
+            hits = re.findall(pattern=r"\b" + pattern + r"\b", string=text)
             if hits:
                 # print("seed", seed, "category", what)
                 # print(hits)

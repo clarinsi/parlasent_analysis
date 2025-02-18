@@ -6,8 +6,8 @@ try:
     outpng = snakemake.output.png
     outjson = snakemake.output.json
 except NameError as e:
-    input_lsd = list(Path("data/lsd/").glob("*.jsonl"))
-    input_parlasent = list(Path("data/parlasent/").glob("*.jsonl"))
+    input_lsd = list(Path("data/lsd/").glob("*coding*.jsonl"))
+    input_parlasent = list(Path("data/parlasent/").glob("*coding*.jsonl"))
     outpng = "brisi.png"
     outjson = "brisi.json"
 
@@ -66,20 +66,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import spearmanr
 
-# df = df.with_columns(
-#     (pl.col("Coding") + np.random.rand(df.shape[0]) * 0.2 - 0.1).alias("Coding")
-# )
-
 
 def corrfunc(x, y, hue=None, ax=None, **kws):
     """Plot the correlation coefficient in the top left hand corner of a plot."""
-    r, _ = spearmanr(x, y)
+    r, p = spearmanr(x, y)
+
     ax = ax or plt.gca()
-    ax.annotate(rf"$\rho$ = {r:.2f}", xy=(0.7, 0.1), xycoords=ax.transAxes)
+    ax.annotate(rf"$\rho$ = {r:.3f}, {p=:.1e}", xy=(0.1, 0.05), xycoords=ax.transAxes)
 
 
+df = df.with_columns(pl.col("Text").str.len_chars().alias("Char Length"))
 df_pandas = df.select(
-    ["Coding", "ParlaSent", "NetTone", "ExpressedSentiment"]
+    [
+        "Coding",
+        "Char Length",
+        "ParlaSent",
+        "NetTone",
+        "ExpressedSentiment",
+    ]
 ).to_pandas()
 g = sns.PairGrid(
     df_pandas,
