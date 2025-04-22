@@ -66,7 +66,7 @@ def corrfunc(x, y, hue=None, ax=None, **kws):
 df_pandas = df.select(["gold", "dictionary score", "ParlaSent", "GPT"]).to_pandas()
 g = sns.PairGrid(
     df_pandas,
-    corner=True,
+    # corner=True,
 )
 g.map_lower(
     sns.scatterplot,
@@ -75,7 +75,7 @@ g.map_lower(
     color="k",
 )
 # g.map_lower(corrfunc)
-# g.map_upper(sns.kdeplot, color="k", levels=5)
+g.map_upper(sns.kdeplot, color="k", levels=5)
 # g.map_upper(corrfunc)
 g.map_diag(
     sns.histplot,
